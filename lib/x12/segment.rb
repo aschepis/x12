@@ -29,15 +29,15 @@ module X12
 
   class Segment < Base
 
-    # Parses this segment out of a string, puts the match into value, returns the rest of the string - nil
+    # Parses this segment out of a string, #puts the match into value, returns the rest of the string - nil
     # if cannot parse
-    def parse(str)
-      s = str
+    def parse(str, repeat=false)
+      s = str.gsub(/^\n/, '')
       #puts "Parsing segment #{name} from #{s} with regexp [#{regexp.source}]"
       m = regexp.match(s)
       #puts "Matched #{m ? m[0] : 'nothing'}"
 
-      return nil unless m
+      return nil if m.nil? || (m && repeat && m.offset(0).first > 0)
 
       s = m.post_match
       self.parsed_str = m[0]
@@ -46,6 +46,18 @@ module X12
       #puts "Parsed segment "+self.inspect
       return s
     end # parse
+
+    def do_repeats(document)
+      if self.repeats.end > 1
+        possible_repeat = self.dup
+        p_s = possible_repeat.parse(document, true)
+        if p_s && p_s != document
+          document = p_s
+          self.next_repeat = possible_repeat
+        end # if parsed
+      end # more repeats
+      document
+    end # do_repeats
 
     # Render all components of this segment as string suitable for EDI
     def render
@@ -76,7 +88,7 @@ module X12
           @regexp = Regexp.new(re_str)
         else
           # Simple match
-          @regexp = Regexp.new("^#{name}#{Regexp.escape(field_separator)}[^#{Regexp.escape(segment_separator)}]*#{Regexp.escape(segment_separator)}$")
+          @regexp = Regexp.new("^#{name}#{Regexp.escape(field_separator)}[^#{Regexp.escape(segment_separator)}]*#{Regexp.escape(segment_separator)}")
         end
         #puts sprintf("%s %p", name, @regexp)
       end

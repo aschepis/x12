@@ -2,8 +2,8 @@
 #     This file is part of the X12Parser library that provides tools to
 #     manipulate X12 messages using Ruby native syntax.
 #
-#     http://x12parser.rubyforge.org 
-#     
+#     http://x12parser.rubyforge.org
+#
 #     Copyright (C) 2008 APP Design, Inc.
 #
 #     This library is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ module X12
   class Loop < Base
 
 #     def regexp
-#       @regexp ||= 
+#       @regexp ||=
 #         Regexp.new(inject(''){|s, i|
 #                      puts i.class
 #                      s += case i
@@ -42,7 +42,7 @@ module X12
 #                    })
 #     end
 
-    # Parse a string and fill out internal structures with the pieces of it. Returns 
+    # Parse a string and fill out internal structures with the pieces of it. Returns
     # an unparsed portion of the string or the original string if nothing was parsed out.
     def parse(document)
       #puts "Parsing loop #{name}: " + document
@@ -84,7 +84,7 @@ module X12
         self.to_a.inject(''){|loop_str, i|
           loop_str += i.nodes.inject(''){|nodes_str, j|
             nodes_str += j.render
-          } 
+          }
         }
       else
         ''
